@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: "/vercel.svg",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Diet4Me – Weekly Meal Plan",
+        alt: "Diet4Me – Personalized Weekly Meal Plans",
       },
     ],
   },
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/vercel.svg"],
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
