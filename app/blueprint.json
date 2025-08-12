@@ -1,0 +1,87 @@
+{
+    "diet_plan": {
+      "name": "Blueprint Protocol",
+      "description": "A plant-based, science-backed diet regimen aimed at optimizing longevity and healthspan.",
+      "meals": [
+        {
+          "name": "Super Veggie",
+          "description": "A nutrient-dense meal featuring black lentils, broccoli, cauliflower, shiitake mushrooms, garlic, ginger, lime, cumin, apple cider vinegar, hemp seeds, and extra virgin olive oil.",
+          "ingredients": [
+            {"item": "Black lentils", "quantity": "45g dry (~150g cooked)"},
+            {"item": "Broccoli", "quantity": "250g (head + stalk)"},
+            {"item": "Cauliflower", "quantity": "150g"},
+            {"item": "Shiitake mushrooms", "quantity": "50g"},
+            {"item": "Garlic", "quantity": "1 clove"},
+            {"item": "Ginger root", "quantity": "3g"},
+            {"item": "Lime", "quantity": "1"},
+            {"item": "Cumin", "quantity": "1 tbsp"},
+            {"item": "Apple cider vinegar", "quantity": "1 tbsp"},
+            {"item": "Hemp seeds", "quantity": "1 tbsp"},
+            {"item": "Extra virgin olive oil", "quantity": "1 tbsp"}
+          ],
+          "preparation": "Cook lentils and vegetables until tender. Combine with spices, vinegar, and hemp seeds. Drizzle with olive oil before serving."
+        },
+        {
+          "name": "Nutty Pudding",
+          "description": "A dessert rich in healthy fats and antioxidants, made with macadamia nut milk, ground nuts, seeds, berries, and pomegranate juice.",
+          "ingredients": [
+            {"item": "Macadamia nut milk", "quantity": "50-100ml"},
+            {"item": "Ground macadamia nuts", "quantity": "3 tbsp"},
+            {"item": "Ground walnuts", "quantity": "2 tsp"},
+            {"item": "Chia seeds", "quantity": "2 tbsp"},
+            {"item": "Ground flaxseed", "quantity": "1 tsp"},
+            {"item": "Brazil nut", "quantity": "1/4"},
+            {"item": "Blueprint cocoa", "quantity": "6g"},
+            {"item": "Sunflower lecithin", "quantity": "1 tsp"},
+            {"item": "Ceylon cinnamon", "quantity": "1/2 tsp"},
+            {"item": "Berries (blueberries, raspberries, or strawberries)", "quantity": "1/2 cup"},
+            {"item": "Cherries", "quantity": "3"},
+            {"item": "Pomegranate juice", "quantity": "2 oz"}
+          ],
+          "preparation": "Blend all ingredients until smooth. Refrigerate for at least 30 minutes before serving."
+        },
+        {
+          "name": "Third Meal",
+          "description": "A flexible meal option consisting of vegetables, nuts, seeds, and berries, designed to be quick to prepare and rich in essential nutrients.",
+          "ingredients": [
+            {"item": "Mixed vegetables", "quantity": "Varies"},
+            {"item": "Nuts (e.g., almonds, walnuts)", "quantity": "Varies"},
+            {"item": "Seeds (e.g., chia, flax)", "quantity": "Varies"},
+            {"item": "Berries", "quantity": "Varies"}
+          ],
+          "preparation": "Combine ingredients as desired. Can be served raw, steamed, or lightly sautéed."
+        }
+      ],
+      "supplements": [
+        {
+          "name": "Collagen Peptides",
+          "description": "Supports skin elasticity and joint health.",
+          "dosage": "25g daily"
+        },
+        {
+          "name": "Creatine",
+          "description": "Enhances muscle strength and energy production.",
+          "dosage": "2.5g daily"
+        },
+        {
+          "name": "Blueprint Stack",
+          "description": "A combination of supplements tailored for longevity.",
+          "dosage": "As per product instructions"
+        }
+      ],
+      "customization_options": {
+        "meal_substitutions": {
+          "Super Veggie": ["Kale", "Spinach", "Brussels sprouts"],
+          "Nutty Pudding": ["Almond milk", "Coconut milk"],
+          "Third Meal": ["Quinoa", "Sweet potatoes", "Avocado"]
+        },
+        "dietary_restrictions": ["Gluten-free", "Nut-free", "Soy-free"],
+        "caloric_intake": {
+          "Super Veggie": "379 kcal",
+          "Nutty Pudding": "433 kcal",
+          "Third Meal": "500 kcal"
+        }
+      }
+    }
+  }
+  
