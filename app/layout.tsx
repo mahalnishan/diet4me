@@ -65,7 +65,13 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/logo.png", type: "image/png", sizes: "any" },
+    ],
+    shortcut: ["/logo.png"],
+    apple: [
+      { url: "/logo.png", sizes: "180x180" },
+    ],
   },
   themeColor: "#0a0a0a",
 };
