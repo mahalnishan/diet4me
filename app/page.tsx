@@ -21,6 +21,7 @@ export default function Home() {
   const [error, setError] = useState<string>("");
 
   const chatRef = useRef<HTMLDivElement>(null);
+  const planRef = useRef<HTMLDivElement>(null);
 
   // Calculate BMI and get status
   const calculateBMI = () => {
@@ -268,7 +269,7 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-                </div>
+        </div>
 
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Diet Preference</label>
@@ -287,7 +288,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Upload Test Results</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Upload Medical Test</label>
                   <div className="relative">
                     <input
                       type="file"
@@ -362,13 +363,56 @@ export default function Home() {
           {/* Chat Panel */}
           <div className="xl:col-span-2">
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
-              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200">
-                <h3 className="text-base sm:text-lg font-semibold text-slate-900">Your Diet Plan</h3>
-                <p className="text-xs sm:text-sm text-slate-600">AI-generated personalized recommendations</p>
-              </div>
+                <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-slate-900">Your Diet Plan</h3>
+                    <p className="text-xs sm:text-sm text-slate-600">AI-generated personalized recommendations</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={messages.length === 0}
+                      onClick={async () => {
+                        if (!planRef.current) return;
+                        const { toPng } = await import("html-to-image");
+                        const dataUrl = await toPng(planRef.current, { pixelRatio: 2, backgroundColor: "#ffffff" });
+                        const link = document.createElement("a");
+                        link.download = "diet4me-plan.png";
+                        link.href = dataUrl;
+                        link.click();
+                      }}
+                      className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      Export PNG
+                    </button>
+                    <button
+                      type="button"
+                      disabled={messages.length === 0}
+                      onClick={async () => {
+                        if (!planRef.current) return;
+                        const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+                          import("html2canvas"),
+                          import("jspdf"),
+                        ]);
+                        const canvas = await html2canvas(planRef.current, { backgroundColor: "#ffffff", scale: 2, useCORS: true });
+                        const imgData = canvas.toDataURL("image/png");
+                        const pdf = new jsPDF({
+                          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+                          unit: "pt",
+                          format: [canvas.width, canvas.height],
+                        });
+                        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+                        pdf.save("diet4me-plan.pdf");
+                      }}
+                      className="px-3 py-1.5 text-xs sm:text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      Export PDF
+                    </button>
+                  </div>
+                </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" ref={chatRef}>
                   {messages.length === 0 ? (
                     <div className="text-center py-8 sm:py-12">
                       <div className="text-slate-400 mb-2">
@@ -379,116 +423,118 @@ export default function Home() {
                       <p className="text-slate-500 text-sm sm:text-base">Your diet plan will appear here...</p>
                     </div>
                   ) : (
-                    messages.map((message, index) => (
-                      <div key={index} className="prose prose-sm max-w-none">
-                        {(() => {
-                          const lines = message.content.split('\n');
-                          const tableLines = lines.filter(line => line.includes('|') && !line.includes('---'));
-                          
-                          if (tableLines.length > 0) {
-                            // Parse the table structure
-                            const headers = tableLines[0].split('|').filter(cell => cell.trim());
-                            const mealRows = tableLines.slice(1); // Skip header row
+                    <div ref={planRef} className="prose prose-sm max-w-none">
+                      {messages.map((message, index) => (
+                        <div key={index}>
+                          {(() => {
+                            const lines = message.content.split('\n');
+                            const tableLines = lines.filter(line => line.includes('|') && !line.includes('---'));
                             
-                            return (
-                              <div className="my-4">
-                                <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
-                                  <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                      <thead>
-                                        <tr className="bg-slate-100 border-b border-slate-200">
-                                          {headers.map((header, index) => (
-                                            <th
-                                              key={index}
-                                              className={`px-3 py-2 text-left text-xs font-semibold text-slate-700 ${
-                                                index === 0 ? 'w-20' : 'w-full'
-                                              }`}
-                                            >
-                                              {header.trim()}
-                                            </th>
-                                          ))}
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {mealRows.map((row, rowIndex) => {
-                                          const cells = row.split('|').filter(cell => cell.trim());
-                                          if (cells.length === headers.length) {
-                                            return (
-                                              <tr key={rowIndex} className="border-b border-slate-200 last:border-b-0 hover:bg-slate-100">
-                                                {cells.map((cell, cellIndex) => (
-                                                  <td
-                                                    key={cellIndex}
-                                                    className={`px-3 py-2 text-xs text-slate-800 ${
-                                                      cellIndex === 0 ? 'font-medium text-slate-700 bg-slate-100 w-20' : 'bg-white'
-                                                    }`}
-                                                  >
-                                                    <div className="break-words leading-relaxed">
-                                                      {cell.trim()}
-                                                    </div>
-                                                  </td>
-                                                ))}
-                                              </tr>
-                                            );
-                                          }
-                                          return null;
-                                        })}
-                                      </tbody>
-                                    </table>
+                            if (tableLines.length > 0) {
+                              // Parse the table structure
+                              const headers = tableLines[0].split('|').filter(cell => cell.trim());
+                              const mealRows = tableLines.slice(1); // Skip header row
+                              
+                              return (
+                                <div className="my-4">
+                                  <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full">
+                                        <thead>
+                                          <tr className="bg-slate-100 border-b border-slate-200">
+                                            {headers.map((header, index) => (
+                                              <th
+                                                key={index}
+                                                className={`px-3 py-2 text-left text-xs font-semibold text-slate-700 ${
+                                                  index === 0 ? 'w-20' : 'w-full'
+                                                }`}
+                                              >
+                                                {header.trim()}
+                                              </th>
+                                            ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {mealRows.map((row, rowIndex) => {
+                                            const cells = row.split('|').filter(cell => cell.trim());
+                                            if (cells.length === headers.length) {
+                                              return (
+                                                <tr key={rowIndex} className="border-b border-slate-200 last:border-b-0 hover:bg-slate-100">
+                                                  {cells.map((cell, cellIndex) => (
+                                                    <td
+                                                      key={cellIndex}
+                                                      className={`px-3 py-2 text-xs text-slate-800 ${
+                                                        cellIndex === 0 ? 'font-medium text-slate-700 bg-slate-100 w-20' : 'bg-white'
+                                                      }`}
+                                                    >
+                                                      <div className="break-words leading-relaxed">
+                                                        {cell.trim()}
+                                                      </div>
+                                                    </td>
+                                                  ))}
+                                                </tr>
+                                              );
+                                            }
+                                            return null;
+                                          })}
+                                        </tbody>
+                                      </table>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          }
-                          
-                          // Fallback to regular markdown parsing for non-table content
-                          return message.content.split('\n').map((line, lineIndex) => {
-                            // Handle other markdown elements
-                            if (line.startsWith('###')) {
-                              return (
-                                <h3 key={lineIndex} className="text-lg font-semibold text-slate-800 mt-4 mb-2">
-                                  {line.replace('###', '').trim()}
-                                </h3>
                               );
                             }
                             
-                            if (line.startsWith('##')) {
+                            // Fallback to regular markdown parsing for non-table content
+                            return message.content.split('\n').map((line, lineIndex) => {
+                              // Handle other markdown elements
+                              if (line.startsWith('###')) {
+                                return (
+                                  <h3 key={lineIndex} className="text-lg font-semibold text-slate-800 mt-4 mb-2">
+                                    {line.replace('###', '').trim()}
+                                  </h3>
+                                );
+                              }
+                              
+                              if (line.startsWith('##')) {
+                                return (
+                                  <h2 key={lineIndex} className="text-xl font-bold text-slate-800 mt-6 mb-3">
+                                    {line.replace('##', '').trim()}
+                                  </h2>
+                                );
+                              }
+                              
+                              if (line.startsWith('#')) {
+                                return (
+                                  <h1 key={lineIndex} className="text-2xl font-bold text-slate-800 mt-8 mb-4">
+                                    {line.replace('#', '').trim()}
+                                  </h1>
+                                );
+                              }
+                              
+                              if (line.startsWith('- ') || line.startsWith('* ')) {
+                                return (
+                                  <div key={lineIndex} className="flex items-center gap-2 my-1">
+                                    <span className="text-emerald-500 mt-1.5">•</span>
+                                    <span className="text-slate-700">{line.replace(/^[-*]\s*/, '')}</span>
+                                  </div>
+                                );
+                              }
+                              
+                              if (line.trim() === '') {
+                                return <div key={lineIndex} className="h-2" />;
+                              }
+                              
                               return (
-                                <h2 key={lineIndex} className="text-xl font-bold text-slate-800 mt-6 mb-3">
-                                  {line.replace('##', '').trim()}
-                                </h2>
+                                <p key={lineIndex} className="text-slate-700 leading-relaxed mb-2">
+                                  {line}
+                                </p>
                               );
-                            }
-                            
-                            if (line.startsWith('#')) {
-                              return (
-                                <h1 key={lineIndex} className="text-2xl font-bold text-slate-800 mt-8 mb-4">
-                                  {line.replace('#', '').trim()}
-                                </h1>
-                              );
-                            }
-                            
-                            if (line.startsWith('- ') || line.startsWith('* ')) {
-                              return (
-                                <div key={lineIndex} className="flex items-center gap-2 my-1">
-                                  <span className="text-emerald-500 mt-1.5">•</span>
-                                  <span className="text-slate-700">{line.replace(/^[-*]\s*/, '')}</span>
-                                </div>
-                              );
-                            }
-                            
-                            if (line.trim() === '') {
-                              return <div key={lineIndex} className="h-2" />;
-                            }
-                            
-                            return (
-                              <p key={lineIndex} className="text-slate-700 leading-relaxed mb-2">
-                                {line}
-                              </p>
-                            );
-                          });
-                        })()}
-                      </div>
-                    ))
+                            });
+                          })()}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
             </div>
