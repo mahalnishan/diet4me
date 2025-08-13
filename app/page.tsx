@@ -14,6 +14,8 @@ export default function Home() {
   const [activityLevel, setActivityLevel] = useState<string>("Sedentary");
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [healthConditionInput, setHealthConditionInput] = useState<string>("");
+  const [goal, setGoal] = useState<string>("Maintain");
+  const [allergens, setAllergens] = useState<string[]>([]);
   const [dietPreference, setDietPreference] = useState<string>("Blueprint");
   const [file, setFile] = useState<File | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -69,6 +71,8 @@ export default function Home() {
     }
   }, [messages]);
 
+  // removed fullscreen feature
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0] ?? null;
     setFile(selectedFile);
@@ -81,6 +85,8 @@ export default function Home() {
     setActivityLevel("Sedentary");
     setHealthConditions([]);
     setHealthConditionInput("");
+    setGoal("Maintain");
+    setAllergens([]);
     setDietPreference("Blueprint");
     setFile(null);
     setMessages([]);
@@ -109,6 +115,8 @@ export default function Home() {
         bmiCategory: bmiData?.status.category || null,
         activityLevel,
         healthConditions,
+        goal,
+        allergens,
         dietPreference,
         fileUploaded: !!file,
         fileName: file?.name || null,
@@ -188,7 +196,7 @@ export default function Home() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Form Panel */}
           <div className="xl:col-span-1">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 lg:p-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 lg:p-6 sticky top-4 self-start h-fit">
               <div className="mb-4 sm:mb-6">
                 <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Personal Profile</h2>
                 <p className="text-xs sm:text-sm text-slate-600">Tell us about yourself to get your personalized diet plan</p>
@@ -316,6 +324,49 @@ export default function Home() {
                         <span className="truncate">{file.name}</span>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Allergens */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Allergen Filters</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {["Nuts", "Dairy", "Soy", "Gluten", "Eggs", "Seafood"].map((item) => (
+                      <label key={item} className="inline-flex items-center gap-2 text-xs sm:text-sm text-slate-700 bg-white border border-slate-300 rounded-lg px-3 py-2">
+                        <input
+                          type="checkbox"
+                          checked={allergens.includes(item)}
+                          onChange={(e) => {
+                            setAllergens((prev) =>
+                              e.target.checked ? [...prev, item] : prev.filter((a) => a !== item)
+                            );
+                          }}
+                          className="accent-emerald-600"
+                        />
+                        {item}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Goal */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Goal</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["Lose Weight", "Gain Muscle", "Maintain"].map((g) => (
+                      <button
+                        type="button"
+                        key={g}
+                        onClick={() => setGoal(g)}
+                        className={`px-3 py-2 rounded-lg text-xs sm:text-sm border transition-colors ${
+                          goal === g
+                            ? "bg-emerald-600 text-white border-emerald-600"
+                            : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
