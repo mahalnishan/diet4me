@@ -172,6 +172,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* SEO for home */}
+      <head>
+        <title>AI Diet Plan Generator | Personalized Weekly Meal Planner</title>
+        <meta name="description" content="Diet4Me is a free AI diet plan generator that builds a personalized weekly meal plan. Custom meal plan generator and AI meal planner." />
+        <meta name="keywords" content="ai diet plan generator, free diet plan generator, personalized diet plan, custom meal plan generator, ai meal planner, weekly meal plan generator" />
+      </head>
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-2 sm:py-3">
