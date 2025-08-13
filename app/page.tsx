@@ -144,6 +144,15 @@ export default function Home() {
   };
 
   const generateMockPlan = () => {
+    if (dietPreference === "Indian") {
+      return `| Meal | Day 1 | Day 2 | Day 3 | Day 4 | Day 5 | Day 6 | Day 7 |
+|------|-------|-------|-------|-------|-------|-------|-------|
+| Breakfast | Poha with peanuts | Vegetable upma | Masala oats | Besan chilla with mint chutney | Idli with sambar | Paneer bhurji with multigrain toast | Moong dal cheela |
+| Lunch | Rajma chawal + salad | Grilled paneer tikka + roti + curd | Dal tadka + jeera rice + kachumber | Chole + brown rice | Mixed veg sabzi + roti + curd | Palak paneer + roti | Sambar + brown rice |
+| Dinner | Grilled chicken/Paneer + sautéed veg | Khichdi + curd | Tawa fish/Tofu + salad | Veg pulao + raita | Chicken curry/Chickpea curry + roti | Egg bhurji/Tofu bhurji + salad | Veg stew + millet roti |
+| Snack | Buttermilk (chaas) | Fruit bowl | Roasted chana | Coconut water + peanuts | Greek curd/yogurt | Handful of nuts | Masala corn |
+| Hydration | 8–10 glasses water | 8–10 glasses water | 8–10 glasses water | 8–10 glasses water | 8–10 glasses water | 8–10 glasses water | 8–10 glasses water |`;
+    }
     return `| Meal | Day 1 | Day 2 | Day 3 | Day 4 | Day 5 | Day 6 | Day 7 |
 |------|-------|-------|-------|-------|-------|-------|-------|
 | Breakfast | Oatmeal with berries & nuts | Protein smoothie bowl | Greek yogurt parfait | Whole grain toast with avocado | Chia pudding with fruits | Smoothie with spinach | Eggs with whole grain bread |
@@ -286,6 +295,7 @@ export default function Home() {
                     <option>Vegan</option>
                     <option>Keto</option>
                     <option>Paleo</option>
+                    <option>Indian</option>
                   </select>
                 </div>
 
