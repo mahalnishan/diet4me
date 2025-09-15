@@ -27,11 +27,22 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (feedback.overallRating === 0) {
+      alert('Please provide an overall rating');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const feedbackData = {
         plan_id: planId,
-        ...feedback
+        overall_rating: feedback.overallRating,
+        meal_ratings: feedback.mealRatings,
+        difficulty: feedback.difficulty,
+        prep_time_accuracy: feedback.prepTimeAccuracy,
+        taste_rating: feedback.tasteRating,
+        comments: feedback.comments || ''
       };
       
       console.log('Submitting feedback:', feedbackData);
@@ -50,7 +61,7 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
       const result = await response.json();
       console.log('Feedback response:', result);
 
-      if (response.ok) {
+      if (response.ok && result.success) {
         onFeedbackSubmitted();
         onClose();
         // Reset form
@@ -64,7 +75,7 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
         });
       } else {
         console.error('Feedback submission failed:', result);
-        alert('Failed to submit feedback: ' + (result.error || 'Unknown error'));
+        alert('Failed to submit feedback: ' + (result.error || result.details || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error submitting feedback:', error);

@@ -8,7 +8,26 @@ export async function POST(request: NextRequest) {
 
     console.log('Feedback API called with:', { type, data });
 
+    // Validate required fields
+    if (!type || !data) {
+      return NextResponse.json({ 
+        error: 'Missing required fields: type and data',
+        success: false 
+      }, { status: 400 });
+    }
+
     if (type === 'meal_plan') {
+      // Validate meal plan feedback data
+      const requiredFields = ['plan_id', 'overall_rating', 'meal_ratings', 'difficulty', 'prep_time_accuracy', 'taste_rating'];
+      const missingFields = requiredFields.filter(field => !data[field]);
+      
+      if (missingFields.length > 0) {
+        return NextResponse.json({ 
+          error: `Missing required fields: ${missingFields.join(', ')}`,
+          success: false 
+        }, { status: 400 });
+      }
+
       console.log('Inserting meal plan feedback...');
       
       const { data: insertedData, error } = await supabase
@@ -21,14 +40,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
           error: 'Failed to save feedback', 
           details: error.message,
-          code: error.code 
+          code: error.code,
+          success: false 
         }, { status: 500 });
       }
 
       console.log('Feedback inserted successfully:', insertedData);
 
       // Update recipe performance
-      await updateRecipePerformance(data);
+      try {
+        await updateRecipePerformance(data);
+      } catch (perfError) {
+        console.error('Error updating recipe performance:', perfError);
+        // Don't fail the request if performance update fails
+      }
       
       return NextResponse.json({ success: true, data: insertedData });
     }
