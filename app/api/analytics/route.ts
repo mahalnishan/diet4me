@@ -21,7 +21,10 @@ let analyticsData: Array<{
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || 
+               request.headers.get('x-real-ip') || 
+               request.headers.get('cf-connecting-ip') || 
+               'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     const analyticsEntry = {
