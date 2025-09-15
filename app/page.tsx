@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, memo, Suspense } from "react";
+import OptimizedImage from "@/components/OptimizedImage";
+import BMICalculator from "@/components/BMICalculator";
+import HealthConditionsInput from "@/components/HealthConditionsInput";
+import ExportButtons from "@/components/ExportButtons";
 
 type Message = {
   role: "ai" | "user";
@@ -17,53 +21,24 @@ export default function Home() {
   const [goal, setGoal] = useState<string>("Maintain");
   const [allergens, setAllergens] = useState<string[]>([]);
   const [dietPreference, setDietPreference] = useState<string>("Blueprint");
-  const [file, setFile] = useState<File | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const chatRef = useRef<HTMLDivElement>(null);
-  const planRef = useRef<HTMLDivElement>(null);
+  const planRef = useRef<HTMLDivElement>(null!);
 
-  // Calculate BMI and get status
-  const calculateBMI = () => {
-    const heightNum = Number(height);
-    const weightNum = Number(weight);
-    
-    if (heightNum > 0 && weightNum > 0) {
-      const heightInMeters = heightNum / 100;
-      const bmi = weightNum / (heightInMeters * heightInMeters);
-      return { bmi: bmi.toFixed(1), status: getBMIStatus(bmi) };
-    }
-    return null;
-  };
-
-  const getBMIStatus = (bmi: number) => {
-    if (bmi < 18.5) return { category: "Underweight", color: "text-red-600", bgColor: "bg-red-50", borderColor: "border-red-200", message: "Consider gaining weight" };
-    if (bmi < 25) return { category: "Normal", color: "text-green-600", bgColor: "bg-green-50", borderColor: "border-green-200", message: "Healthy weight range" };
-    if (bmi < 30) return { category: "Overweight", color: "text-orange-600", bgColor: "bg-orange-50", borderColor: "border-orange-200", message: "Consider weight management" };
-    return { category: "Obese", color: "text-red-600", bgColor: "bg-red-50", borderColor: "border-red-200", message: "Focus on weight reduction" };
-  };
-
-  const bmiData = calculateBMI();
-
-  const addHealthCondition = () => {
+  // Memoized callbacks to prevent unnecessary re-renders
+  const addHealthCondition = useCallback(() => {
     if (healthConditionInput.trim() && !healthConditions.includes(healthConditionInput.trim())) {
       setHealthConditions([...healthConditions, healthConditionInput.trim()]);
       setHealthConditionInput("");
     }
-  };
+  }, [healthConditionInput, healthConditions]);
 
-  const removeHealthCondition = (index: number) => {
+  const removeHealthCondition = useCallback((index: number) => {
     setHealthConditions(healthConditions.filter((_, i) => i !== index));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addHealthCondition();
-    }
-  };
+  }, [healthConditions]);
 
   useEffect(() => {
     if (chatRef.current) {
@@ -73,10 +48,6 @@ export default function Home() {
 
   // removed fullscreen feature
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0] ?? null;
-    setFile(selectedFile);
-  };
 
   const handleReset = () => {
     setAge("");
@@ -88,7 +59,6 @@ export default function Home() {
     setGoal("Maintain");
     setAllergens([]);
     setDietPreference("Blueprint");
-    setFile(null);
     setMessages([]);
     setError("");
   };
@@ -113,15 +83,15 @@ export default function Home() {
         age: Number(age),
         height: Number(height),
         weight: Number(weight),
-        bmi: bmiData?.bmi || null,
-        bmiCategory: bmiData?.status.category || null,
+        bmi: null, // BMI will be calculated on the server side
+        bmiCategory: null,
         activityLevel,
         healthConditions,
         goal,
         allergens,
         dietPreference,
-        fileUploaded: !!file,
-        fileName: file?.name || null,
+        fileUploaded: false,
+        fileName: null,
       };
 
       const response = await fetch('/api/generate', {
@@ -188,10 +158,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-2 sm:py-3">
           <div className="flex items-center justify-start">
             <div className="flex items-center space-x-1.5 sm:space-x-2">
-              <img 
-                src="/logo.png" 
-                alt="Diet4Me Logo" 
-                className="w-5 h-5 sm:w-10 sm:h-10 object-contain"
+              <OptimizedImage
+                src="/logo.png"
+                alt="Diet4Me Logo"
+                width={40}
+                height={40}
+                className="w-5 h-5 sm:w-10 sm:h-10"
+                priority={true}
+                sizes="(max-width: 640px) 20px, 40px"
               />
               <div>
                 <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">Diet4Me</h1>
@@ -266,40 +240,13 @@ export default function Home() {
                 </div>
 
                 {/* Health Conditions */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">
-                    Health Conditions
-                  </label>
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={healthConditionInput}
-                      onChange={(e) => setHealthConditionInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Add health condition"
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 bg-white"
-                    />
-                    {healthConditions.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {healthConditions.map((condition, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200"
-                          >
-                            {condition}
-                            <button
-                              type="button"
-                              onClick={() => removeHealthCondition(index)}
-                              className="text-emerald-600 hover:text-emerald-800 focus:outline-none"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-        </div>
+                <HealthConditionsInput
+                  healthConditions={healthConditions}
+                  healthConditionInput={healthConditionInput}
+                  setHealthConditionInput={setHealthConditionInput}
+                  onAddCondition={addHealthCondition}
+                  onRemoveCondition={removeHealthCondition}
+                />
 
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Diet Preference</label>
@@ -318,25 +265,6 @@ export default function Home() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Upload Medical Test</label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={handleFileChange}
-                      className="w-full px-2.5 sm:px-3 py-2 sm:py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-slate-900 bg-white file:mr-3 sm:file:mr-4 file:py-1 sm:file:py-1.5 file:px-2 sm:file:px-3 file:border-0 file:rounded-md file:bg-emerald-50 file:text-emerald-700 file:text-xs sm:file:text-sm file:font-medium hover:file:bg-emerald-100"
-                    />
-                    {file && (
-                      <div className="mt-2 flex items-center space-x-2 text-xs sm:text-sm text-emerald-600">
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="truncate">{file.name}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
                 {/* Allergens */}
                 <div>
@@ -382,24 +310,7 @@ export default function Home() {
                 </div>
 
                 {/* BMI Calculator */}
-                {bmiData && (
-                  <div className={`p-3 sm:p-4 rounded-lg border ${bmiData.status.bgColor} ${bmiData.status.borderColor}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs sm:text-sm font-medium text-slate-700">Your BMI:</span>
-                      <span className={`text-base sm:text-lg font-bold ${bmiData.status.color}`}>
-                        {bmiData.bmi}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs sm:text-sm font-medium ${bmiData.status.color}`}>
-                        {bmiData.status.category}
-                      </span>
-                      <span className="text-xs text-slate-600">
-                        {bmiData.status.message}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                <BMICalculator height={height} weight={weight} />
 
                 {error && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -442,47 +353,7 @@ export default function Home() {
                     <h3 className="text-base sm:text-lg font-semibold text-slate-900">Your Diet Plan</h3>
                     <p className="text-xs sm:text-sm text-slate-600">AI-generated personalized recommendations</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      disabled={messages.length === 0}
-                      onClick={async () => {
-                        if (!planRef.current) return;
-                        const { toPng } = await import("html-to-image");
-                        const dataUrl = await toPng(planRef.current, { pixelRatio: 2, backgroundColor: "#ffffff" });
-                        const link = document.createElement("a");
-                        link.download = "diet4me-plan.png";
-                        link.href = dataUrl;
-                        link.click();
-                      }}
-                      className="px-3 py-1.5 text-xs sm:text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                    >
-                      Export PNG
-                    </button>
-                    <button
-                      type="button"
-                      disabled={messages.length === 0}
-                      onClick={async () => {
-                        if (!planRef.current) return;
-                        const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-                          import("html2canvas"),
-                          import("jspdf"),
-                        ]);
-                        const canvas = await html2canvas(planRef.current, { backgroundColor: "#ffffff", scale: 2, useCORS: true });
-                        const imgData = canvas.toDataURL("image/png");
-                        const pdf = new jsPDF({
-                          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-                          unit: "pt",
-                          format: [canvas.width, canvas.height],
-                        });
-                        pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-                        pdf.save("diet4me-plan.pdf");
-                      }}
-                      className="px-3 py-1.5 text-xs sm:text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
-                    >
-                      Export PDF
-                    </button>
-                  </div>
+                  <ExportButtons planRef={planRef} messagesLength={messages.length} />
                 </div>
 
                 {/* Messages */}
