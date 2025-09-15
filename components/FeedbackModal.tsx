@@ -33,6 +33,15 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
       return;
     }
 
+    // Check if meal ratings have been set (not all 0)
+    const hasMealRatings = Object.values(feedback.mealRatings).some(rating => rating > 0);
+    if (!hasMealRatings) {
+      alert('Please rate at least one meal');
+      return;
+    }
+
+    console.log('Current feedback state:', feedback);
+
     setIsSubmitting(true);
     try {
       const feedbackData = {
@@ -44,6 +53,16 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
         taste_rating: feedback.tasteRating,
         comments: feedback.comments || ''
       };
+
+      console.log('Transformed feedback data:', feedbackData);
+      console.log('Required fields check:', {
+        plan_id: !!feedbackData.plan_id,
+        overall_rating: !!feedbackData.overall_rating,
+        meal_ratings: !!feedbackData.meal_ratings,
+        difficulty: !!feedbackData.difficulty,
+        prep_time_accuracy: !!feedbackData.prep_time_accuracy,
+        taste_rating: !!feedbackData.taste_rating
+      });
       
       console.log('Submitting feedback:', feedbackData);
       

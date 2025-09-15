@@ -19,7 +19,12 @@ export async function POST(request: NextRequest) {
     if (type === 'meal_plan') {
       // Validate meal plan feedback data
       const requiredFields = ['plan_id', 'overall_rating', 'meal_ratings', 'difficulty', 'prep_time_accuracy', 'taste_rating'];
-      const missingFields = requiredFields.filter(field => !data[field]);
+      const missingFields = requiredFields.filter(field => {
+        if (field === 'meal_ratings') {
+          return !data[field] || typeof data[field] !== 'object';
+        }
+        return !data[field];
+      });
       
       if (missingFields.length > 0) {
         return NextResponse.json({ 
