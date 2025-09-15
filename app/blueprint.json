@@ -1,7 +1,7 @@
 {
     "diet_plan": {
       "name": "Blueprint Protocol",
-      "description": "A plant-based, science-backed diet regimen aimed at optimizing longevity and healthspan.",
+      "description": "A plant-based, science-backed diet regimen aimed at optimizing longevity and healthspan, featuring comprehensive nutrient-dense ingredients.",
       "meals": [
         {
           "name": "Super Veggie",
@@ -11,15 +11,18 @@
             {"item": "Broccoli", "quantity": "250g (head + stalk)"},
             {"item": "Cauliflower", "quantity": "150g"},
             {"item": "Shiitake mushrooms", "quantity": "50g"},
-            {"item": "Garlic", "quantity": "1 clove"},
-            {"item": "Ginger root", "quantity": "3g"},
-            {"item": "Lime", "quantity": "1"},
-            {"item": "Cumin", "quantity": "1 tbsp"},
+            {"item": "Garlic", "quantity": "1 clove, minced"},
+            {"item": "Ginger root", "quantity": "3g, grated"},
+            {"item": "Lime juice", "quantity": "1 tbsp"},
+            {"item": "Cumin", "quantity": "1 tbsp, ground"},
             {"item": "Apple cider vinegar", "quantity": "1 tbsp"},
             {"item": "Hemp seeds", "quantity": "1 tbsp"},
-            {"item": "Extra virgin olive oil", "quantity": "1 tbsp"}
+            {"item": "Extra virgin olive oil", "quantity": "1 tbsp"},
+            {"item": "Turmeric powder", "quantity": "1/2 tsp"},
+            {"item": "Black pepper", "quantity": "1/4 tsp"},
+            {"item": "Salt", "quantity": "to taste"}
           ],
-          "preparation": "Cook lentils and vegetables until tender. Combine with spices, vinegar, and hemp seeds. Drizzle with olive oil before serving."
+          "preparation": "Cook lentils until tender. Steam broccoli and cauliflower until crisp-tender. Sauté shiitake mushrooms with garlic and ginger. Combine all vegetables with lentils, spices, vinegar, and hemp seeds. Drizzle with olive oil and lime juice before serving."
         },
         {
           "name": "Nutty Pudding",
@@ -30,26 +33,105 @@
             {"item": "Ground walnuts", "quantity": "2 tsp"},
             {"item": "Chia seeds", "quantity": "2 tbsp"},
             {"item": "Ground flaxseed", "quantity": "1 tsp"},
-            {"item": "Brazil nut", "quantity": "1/4"},
-            {"item": "Blueprint cocoa", "quantity": "6g"},
-            {"item": "Sunflower lecithin", "quantity": "1 tsp"},
-            {"item": "Ceylon cinnamon", "quantity": "1/2 tsp"},
-            {"item": "Berries (blueberries, raspberries, or strawberries)", "quantity": "1/2 cup"},
-            {"item": "Cherries", "quantity": "3"},
-            {"item": "Pomegranate juice", "quantity": "2 oz"}
+            {"item": "Hemp seeds", "quantity": "1 tbsp"},
+            {"item": "Blueprint cacao", "quantity": "6g"},
+            {"item": "Ground cinnamon", "quantity": "1/2 tsp"},
+            {"item": "Vanilla extract", "quantity": "1/2 tsp"},
+            {"item": "Maple syrup", "quantity": "1 tsp"},
+            {"item": "Blueberries", "quantity": "1/4 cup"},
+            {"item": "Strawberries", "quantity": "1/4 cup"},
+            {"item": "Dark cherries", "quantity": "3, pitted"},
+            {"item": "Pomegranate arils", "quantity": "1 tbsp"}
           ],
-          "preparation": "Blend all ingredients until smooth. Refrigerate for at least 30 minutes before serving."
+          "preparation": "Blend macadamia milk with ground nuts, seeds, cacao, cinnamon, vanilla, and maple syrup until smooth. Fold in fresh berries and pomegranate arils. Refrigerate for at least 30 minutes before serving."
         },
         {
-          "name": "Third Meal",
-          "description": "A flexible meal option consisting of vegetables, nuts, seeds, and berries, designed to be quick to prepare and rich in essential nutrients.",
+          "name": "Mediterranean Bowl",
+          "description": "A vibrant bowl featuring roasted vegetables, legumes, and Mediterranean flavors with anti-inflammatory properties.",
           "ingredients": [
-            {"item": "Mixed vegetables", "quantity": "Varies"},
-            {"item": "Nuts (e.g., almonds, walnuts)", "quantity": "Varies"},
-            {"item": "Seeds (e.g., chia, flax)", "quantity": "Varies"},
-            {"item": "Berries", "quantity": "Varies"}
+            {"item": "Red lentils", "quantity": "1/2 cup, cooked"},
+            {"item": "Red cabbage", "quantity": "1 cup, shredded"},
+            {"item": "Cherry tomatoes", "quantity": "1/2 cup, halved"},
+            {"item": "Red peppers", "quantity": "1/2, roasted and sliced"},
+            {"item": "Zucchini", "quantity": "1/2, sliced and roasted"},
+            {"item": "Castelvetrano olives", "quantity": "6-8, pitted"},
+            {"item": "Fresh mint", "quantity": "2 tbsp, chopped"},
+            {"item": "Fresh cilantro", "quantity": "2 tbsp, chopped"},
+            {"item": "Parsley", "quantity": "1 tbsp, chopped"},
+            {"item": "Extra virgin olive oil", "quantity": "2 tbsp"},
+            {"item": "Balsamic vinegar", "quantity": "1 tbsp"},
+            {"item": "Lemon juice", "quantity": "1 tbsp"},
+            {"item": "Garlic powder", "quantity": "1/2 tsp"},
+            {"item": "Cumin", "quantity": "1/2 tsp"},
+            {"item": "Salt", "quantity": "to taste"},
+            {"item": "Black pepper", "quantity": "to taste"}
           ],
-          "preparation": "Combine ingredients as desired. Can be served raw, steamed, or lightly sautéed."
+          "preparation": "Roast red peppers and zucchini until tender. Combine with cooked lentils, shredded cabbage, cherry tomatoes, and olives. Whisk together olive oil, balsamic vinegar, lemon juice, and spices for dressing. Toss vegetables with dressing and fresh herbs."
+        },
+        {
+          "name": "Asian-Inspired Stir Fry",
+          "description": "A quick and nutritious stir-fry with Asian vegetables, mushrooms, and umami-rich seasonings.",
+          "ingredients": [
+            {"item": "Shiitake mushrooms", "quantity": "100g, sliced"},
+            {"item": "Sugar snap peas", "quantity": "1 cup"},
+            {"item": "Broccoli", "quantity": "1 cup, florets"},
+            {"item": "Carrots", "quantity": "1/2 cup, julienned"},
+            {"item": "Mung bean sprouts", "quantity": "1/2 cup"},
+            {"item": "Garlic", "quantity": "2 cloves, minced"},
+            {"item": "Ginger root", "quantity": "1 inch, grated"},
+            {"item": "Shallot", "quantity": "1, thinly sliced"},
+            {"item": "Red chili", "quantity": "1, thinly sliced"},
+            {"item": "Gluten-free tamari", "quantity": "2 tbsp"},
+            {"item": "Rice vinegar", "quantity": "1 tbsp"},
+            {"item": "Sesame oil", "quantity": "1 tsp"},
+            {"item": "Extra virgin olive oil", "quantity": "1 tbsp"},
+            {"item": "Hemp seeds", "quantity": "1 tbsp"},
+            {"item": "Fresh cilantro", "quantity": "2 tbsp, chopped"}
+          ],
+          "preparation": "Heat olive oil in a wok or large pan. Sauté garlic, ginger, and shallot until fragrant. Add mushrooms and cook until golden. Add broccoli, snap peas, and carrots, stir-frying until crisp-tender. Add sprouts and seasonings, tossing quickly. Garnish with hemp seeds and cilantro."
+        },
+        {
+          "name": "Squash & Root Vegetable Roast",
+          "description": "A hearty roasted vegetable medley featuring winter squash, sweet potatoes, and warming spices.",
+          "ingredients": [
+            {"item": "Butternut squash", "quantity": "1 cup, cubed"},
+            {"item": "Acorn squash", "quantity": "1 cup, cubed"},
+            {"item": "Sweet potatoes", "quantity": "1 cup, cubed"},
+            {"item": "Spaghetti squash", "quantity": "1/2, roasted and shredded"},
+            {"item": "Red onions", "quantity": "1/2, sliced"},
+            {"item": "Garlic", "quantity": "3 cloves, whole"},
+            {"item": "Extra virgin olive oil", "quantity": "2 tbsp"},
+            {"item": "Ground cinnamon", "quantity": "1/2 tsp"},
+            {"item": "Turmeric powder", "quantity": "1/2 tsp"},
+            {"item": "Cumin", "quantity": "1/2 tsp"},
+            {"item": "Paprika", "quantity": "1/2 tsp"},
+            {"item": "Salt", "quantity": "to taste"},
+            {"item": "Black pepper", "quantity": "to taste"},
+            {"item": "Fresh rosemary", "quantity": "1 tbsp, chopped"},
+            {"item": "Fresh thyme", "quantity": "1 tbsp, chopped"}
+          ],
+          "preparation": "Preheat oven to 400°F. Toss cubed vegetables with olive oil, spices, and herbs. Roast for 30-35 minutes until tender and caramelized. Serve over spaghetti squash strands."
+        },
+        {
+          "name": "Green Smoothie Bowl",
+          "description": "A nutrient-packed smoothie bowl with leafy greens, fruits, and superfood toppings.",
+          "ingredients": [
+            {"item": "Spinach", "quantity": "2 cups, fresh"},
+            {"item": "Almond milk", "quantity": "1/2 cup"},
+            {"item": "Frozen blueberries", "quantity": "1/2 cup"},
+            {"item": "Frozen strawberries", "quantity": "1/2 cup"},
+            {"item": "Banana", "quantity": "1/2, frozen"},
+            {"item": "Hemp seeds", "quantity": "1 tbsp"},
+            {"item": "Chia seeds", "quantity": "1 tbsp"},
+            {"item": "Ground flaxseed", "quantity": "1 tsp"},
+            {"item": "Vanilla extract", "quantity": "1/2 tsp"},
+            {"item": "Maple syrup", "quantity": "1 tsp"},
+            {"item": "Fresh berries", "quantity": "1/4 cup, for topping"},
+            {"item": "Pomegranate arils", "quantity": "1 tbsp, for topping"},
+            {"item": "Roasted almonds", "quantity": "1 tbsp, chopped, for topping"},
+            {"item": "Coconut flakes", "quantity": "1 tbsp, for topping"}
+          ],
+          "preparation": "Blend spinach, almond milk, frozen fruits, seeds, vanilla, and maple syrup until smooth and thick. Pour into a bowl and top with fresh berries, pomegranate arils, almonds, and coconut flakes."
         }
       ],
       "supplements": [
@@ -71,16 +153,60 @@
       ],
       "customization_options": {
         "meal_substitutions": {
-          "Super Veggie": ["Kale", "Spinach", "Brussels sprouts"],
-          "Nutty Pudding": ["Almond milk", "Coconut milk"],
-          "Third Meal": ["Quinoa", "Sweet potatoes", "Avocado"]
+          "Super Veggie": ["Kale", "Spinach", "Brussels sprouts", "Red cabbage"],
+          "Nutty Pudding": ["Almond milk", "Coconut milk", "Oat milk"],
+          "Mediterranean Bowl": ["Quinoa", "Brown rice", "Chickpeas"],
+          "Asian Stir Fry": ["Tofu", "Tempeh", "Edamame"],
+          "Squash Roast": ["Beets", "Turnips", "Parsnips"],
+          "Green Smoothie": ["Kale", "Swiss chard", "Arugula"]
         },
-        "dietary_restrictions": ["Gluten-free", "Nut-free", "Soy-free"],
+        "dietary_restrictions": ["Gluten-free", "Nut-free", "Soy-free", "Dairy-free"],
         "caloric_intake": {
           "Super Veggie": "379 kcal",
           "Nutty Pudding": "433 kcal",
-          "Third Meal": "500 kcal"
+          "Mediterranean Bowl": "420 kcal",
+          "Asian Stir Fry": "350 kcal",
+          "Squash Roast": "380 kcal",
+          "Green Smoothie Bowl": "320 kcal"
         }
+      },
+      "ingredient_categories": {
+        "vegetables_legumes": [
+          "Onion", "Red cabbage", "White cabbage", "Mung bean sprouts", "Broccoli", 
+          "Shiitake mushrooms", "Sugar snap peas", "Cauliflower rice", "Carrots", 
+          "Celery", "Garlic", "Red peppers", "Zucchini", "Parsley", "Chives", 
+          "Roma tomato", "Mushrooms", "Cooked chickpeas", "Black lentils", 
+          "Sweet potatoes", "Green beans", "Shallot", "Black currants", 
+          "Castelvetrano olives", "Fresh mint", "Cabbage", "Fresh cilantro", 
+          "Spaghetti squash", "Acorn squash", "Butternut squash", "Honeycrisp apples", 
+          "Cherry tomatoes", "Spinach", "Shredded carrots", "Radish", "Pickled red onions"
+        ],
+        "grains_pulses": [
+          "Red lentils", "Chickpea flour", "Cooked lentils", "Chickpea rice", "Almond flour"
+        ],
+        "nuts_seeds": [
+          "Hemp seeds", "Walnuts", "Nutritional yeast", "Almonds", "Macadamia nuts", 
+          "Chia seeds", "Ground flax", "Unsweetened dried cranberries"
+        ],
+        "oils_condiments": [
+          "Olive oil", "Gluten-free tamari", "Vegetable stock", "Balsamic vinegar", 
+          "Liquid smoke", "Unsweetened ketchup", "Almond milk", "Red wine vinegar", 
+          "Dijon mustard", "Tomato paste", "Tomato sauce", "Coconut milk", "Maple syrup"
+        ],
+        "spices_herbs": [
+          "Ginger powder", "Garlic powder", "Cumin", "Turmeric powder", "Bay leaves", 
+          "Paprika", "Red pepper flakes", "Za'atar", "Black pepper", "Chipotle powder", 
+          "Italian seasoning", "Onion powder", "Dried thyme", "Dried rosemary", 
+          "Ground cinnamon", "Salt", "Coriander powder", "Red chili powder", 
+          "Umami seasoning", "Cardamom", "Garam masala", "Vanilla extract"
+        ],
+        "specialty": [
+          "Sun-dried tomato hummus", "Butterfly pea flower powder", "Honey", "Blueprint cacao"
+        ],
+        "fruits": [
+          "Strawberries", "Blueberries", "Pomegranate arils", "Dark cherries", 
+          "Fresh berries", "Lime juice"
+        ]
       }
     }
   }
