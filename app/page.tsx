@@ -32,6 +32,11 @@ export default function Home() {
   // Analytics
   const analytics = useAnalytics();
 
+  // Debug plan ID changes
+  useEffect(() => {
+    console.log('Plan ID changed:', currentPlanId);
+  }, [currentPlanId]);
+
   // Calculate BMI and get status
   const calculateBMI = () => {
     const heightNum = Number(height);
@@ -186,6 +191,26 @@ export default function Home() {
         ...prev,
         { role: "ai", content: fallback },
       ]);
+      
+      // Generate a unique plan ID for feedback tracking (fallback case)
+      const planId = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentPlanId(planId);
+      
+      // Track fallback generation
+      analytics.trackGeneration({
+        planId,
+        generationType: 'mock',
+        userInputs: {
+          age: Number(age),
+          height: Number(height),
+          weight: Number(weight),
+          activityLevel,
+          dietPreference,
+          healthConditions
+        },
+        generationTimeMs: Date.now() - startTime,
+        success: true
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -497,9 +522,10 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      disabled={messages.length === 0}
+                      disabled={messages.length === 0 || !currentPlanId}
                       onClick={() => setShowFeedbackModal(true)}
                       className="px-3 py-1.5 text-xs sm:text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                      title={!currentPlanId ? "Please generate a diet plan first" : "Rate this diet plan"}
                     >
                       ⭐ Rate Plan
                     </button>

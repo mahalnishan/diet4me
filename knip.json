@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "app/**/*.{js,ts,jsx,tsx}",
+    "next.config.*",
+    "tailwind.config.*",
+    "postcss.config.*"
+  ],
+  "project": [
+    "app/**/*.{js,ts,jsx,tsx}",
+    "components/**/*.{js,ts,jsx,tsx}",
+    "hooks/**/*.{js,ts,jsx,tsx}",
+    "lib/**/*.{js,ts,jsx,tsx}",
+    "public/**/*"
+  ],
+  "ignore": [
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/build/**"
+  ]
+}

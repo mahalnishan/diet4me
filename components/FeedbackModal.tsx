@@ -40,7 +40,15 @@ export default function FeedbackModal({ isOpen, onClose, planId, onFeedbackSubmi
       return;
     }
 
+    // Check if plan_id is available
+    if (!planId) {
+      alert('Error: No plan ID available. Please generate a new diet plan first.');
+      console.error('Plan ID is missing:', { planId, feedback });
+      return;
+    }
+
     console.log('Current feedback state:', feedback);
+    console.log('Plan ID:', planId);
 
     setIsSubmitting(true);
     try {

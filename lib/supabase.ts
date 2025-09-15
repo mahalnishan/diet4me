@@ -24,15 +24,6 @@ export interface MealPlanFeedback {
   created_at?: string
 }
 
-export interface RecipePerformance {
-  id?: string
-  recipe_name: string
-  total_ratings: number
-  average_rating: number
-  success_rate: number
-  last_updated?: string
-}
-
 export interface UserProfile {
   id?: string
   user_id: string
