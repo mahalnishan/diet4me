@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import FeedbackModal from "@/components/FeedbackModal";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 type Message = {
   role: "ai" | "user";
@@ -21,9 +23,14 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [showFeedbackModal, setShowFeedbackModal] = useState<boolean>(false);
+  const [currentPlanId, setCurrentPlanId] = useState<string>("");
 
   const chatRef = useRef<HTMLDivElement>(null);
   const planRef = useRef<HTMLDivElement>(null);
+  
+  // Analytics
+  const analytics = useAnalytics();
 
   // Calculate BMI and get status
   const calculateBMI = () => {
@@ -97,14 +104,27 @@ export default function Home() {
     // Validate required fields
     if (!age || !height || !weight) {
       setError('Please fill in all required fields (Age, Height, Weight)');
+      analytics.trackError(new Error('Validation failed: missing required fields'));
       return;
     }
 
     setError('');
     setIsGenerating(true);
 
+    // Track generation start
+    analytics.trackFeatureUsage('diet_generation', 'start', {
+      age,
+      height,
+      weight,
+      activityLevel,
+      dietPreference,
+      healthConditions: healthConditions.length
+    });
+
     // Clear existing diet plan
     setMessages([]);
+
+    const startTime = Date.now();
 
     try {
       const payload = {
@@ -140,6 +160,26 @@ export default function Home() {
         ...prev,
         { role: "ai", content },
       ]);
+      
+      // Generate a unique plan ID for feedback tracking
+      const planId = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentPlanId(planId);
+      
+      // Track successful generation
+      analytics.trackGeneration({
+        planId,
+        generationType: data.content ? 'ai_generated' : 'mock',
+        userInputs: {
+          age: Number(age),
+          height: Number(height),
+          weight: Number(weight),
+          activityLevel,
+          dietPreference,
+          healthConditions
+        },
+        generationTimeMs: Date.now() - startTime,
+        success: true
+      });
     } catch (err) {
       const fallback = generateMockPlan();
       setMessages((prev) => [
@@ -458,6 +498,14 @@ export default function Home() {
                     <button
                       type="button"
                       disabled={messages.length === 0}
+                      onClick={() => setShowFeedbackModal(true)}
+                      className="px-3 py-1.5 text-xs sm:text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      ⭐ Rate Plan
+                    </button>
+                    <button
+                      type="button"
+                      disabled={messages.length === 0}
                       onClick={async () => {
                         if (!planRef.current) return;
                         const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
@@ -631,6 +679,17 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        planId={currentPlanId}
+        onFeedbackSubmitted={() => {
+          console.log('Feedback submitted successfully!');
+          // You could show a toast notification here
+        }}
+      />
     </div>
   );
 }

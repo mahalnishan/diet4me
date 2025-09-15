@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import FeedbackAnalytics from '@/components/FeedbackAnalytics';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import { Metadata } from 'next';
 
 interface IPStats {
@@ -141,6 +143,11 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
+        {/* Main Analytics Dashboard */}
+        <div className="mb-8">
+          <AnalyticsDashboard />
+        </div>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
@@ -253,6 +260,17 @@ export default function AnalyticsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Feedback Analytics */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-8">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h2 className="text-xl font-semibold text-slate-900">Feedback Analytics</h2>
+            <p className="text-sm text-slate-600">User feedback and recipe performance insights</p>
+          </div>
+          <div className="p-6">
+            <FeedbackAnalytics />
           </div>
         </div>
 
