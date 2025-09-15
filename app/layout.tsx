@@ -60,7 +60,6 @@ export const metadata: Metadata = {
     shortcut: ["/logo.png"],
     apple: [{ url: "/logo.png", sizes: "180x180" }],
   },
-  themeColor: "#0a0a0a",
 };
 
 // 👇 Viewport settings prevent input zooming on iOS/Android

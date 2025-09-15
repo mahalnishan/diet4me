@@ -2,6 +2,13 @@
 
 import { useEffect } from 'react';
 
+// Type definition for PerformanceEventTiming
+interface PerformanceEventTiming extends PerformanceEntry {
+  processingStart: number;
+  processingEnd: number;
+  cancelable: boolean;
+}
+
 export default function PerformanceMonitor() {
   useEffect(() => {
     // Preload critical resources
@@ -36,7 +43,10 @@ export default function PerformanceMonitor() {
       new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         entries.forEach((entry) => {
-          console.log('INP:', entry.processingStart - entry.startTime);
+          if ('processingStart' in entry) {
+            const eventEntry = entry as PerformanceEventTiming;
+            console.log('INP:', eventEntry.processingStart - eventEntry.startTime);
+          }
         });
       }).observe({ entryTypes: ['event'] });
 
