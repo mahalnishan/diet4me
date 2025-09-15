@@ -19,16 +19,22 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* styles/globals.css */
 
+/* Prevent mobile browsers from auto-adjusting text size */
 html {
-  -webkit-text-size-adjust: 100%; /* iOS Safari fix */
-  -ms-text-size-adjust: 100%;     /* IE Mobile */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
-input,
-textarea,
-select,
-button {
-  font-size: 16px;   /* prevents iOS Safari zoom */
+/* Make sure inputs / textareas / selects / buttons are >= 16px to avoid iOS auto-zoom */
+:where(input, textarea, select, button) {
+  font-size: 16px;
   line-height: 1.2;
+  /* don't force appearance changes, just ensure size */
 }
+
+/* If you use smaller placeholder/label text, keep them separate:
+label, .small-meta-text {
+  font-size: 0.9rem;  /* relative sizes are fine for non-form controls */
+

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -66,20 +66,19 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   icons: {
-    icon: [
-      { url: "/logo.png", type: "image/png", sizes: "any" },
-    ],
+    icon: [{ url: "/logo.png", type: "image/png", sizes: "any" }],
     shortcut: ["/logo.png"],
-    apple: [
-      { url: "/logo.png", sizes: "180x180" },
-    ],
+    apple: [{ url: "/logo.png", sizes: "180x180" }],
   },
   themeColor: "#0a0a0a",
 };
 
+// 👇 Viewport settings prevent input zooming on iOS/Android
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1, // <-- prevents Safari from zooming inputs
+  viewportFit: "cover",
   themeColor: "#0a0a0a",
 };
 
@@ -107,7 +106,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
         <Analytics />
       </body>
