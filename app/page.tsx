@@ -505,18 +505,16 @@ export default function Home() {
                               const mealRows = tableLines.slice(1); // Skip header row
                               
                               return (
-                                <div className="my-4">
-                                  <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
-                                    <div className="overflow-x-auto">
-                                      <table className="w-full">
+                                <div className="my-4 h-full">
+                                  <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden h-full">
+                                    <div className="overflow-x-auto h-full">
+                                      <table className="w-full h-full">
                                         <thead>
                                           <tr className="bg-slate-100 border-b border-slate-200">
                                             {headers.map((header, index) => (
                                               <th
                                                 key={index}
-                                                className={`px-3 py-2 text-left text-xs font-semibold text-slate-700 ${
-                                                  index === 0 ? 'w-20' : 'w-full'
-                                                }`}
+                                                className="px-3 py-4 text-left text-xs font-semibold text-slate-700 w-1/8 h-16"
                                               >
                                                 {header.trim()}
                                               </th>
@@ -532,11 +530,11 @@ export default function Home() {
                                                   {cells.map((cell, cellIndex) => (
                                                     <td
                                                       key={cellIndex}
-                                                      className={`px-3 py-2 text-xs text-slate-800 ${
-                                                        cellIndex === 0 ? 'font-medium text-slate-700 bg-slate-100 w-20' : 'bg-white'
+                                                      className={`px-3 py-4 text-xs text-slate-800 w-1/8 h-20 ${
+                                                        cellIndex === 0 ? 'font-medium text-slate-700 bg-slate-100' : 'bg-white'
                                                       }`}
                                                     >
-                                                      <div className="break-words leading-relaxed">
+                                                      <div className="break-words leading-relaxed h-full flex items-center">
                                                         {cell.trim()}
                                                       </div>
                                                     </td>
