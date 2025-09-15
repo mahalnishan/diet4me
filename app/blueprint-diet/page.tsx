@@ -31,11 +31,6 @@ export default function BlueprintSEOPage() {
     <section className="max-w-3xl mx-auto p-6 space-y-4">
       <h1 className="text-2xl font-semibold text-slate-900">Blueprint Diet</h1>
       <p className="text-slate-600">Learn the Blueprint protocol and build a weekly plan.</p>
-      <nav className="text-sm text-emerald-700 flex gap-4">
-        <a href="/generator" className="underline">Generator</a>
-        <a href="/goals/weight-loss" className="underline">Weight Loss</a>
-        <a href="/meal-plans" className="underline">Meal Plans</a>
-      </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </section>
   );

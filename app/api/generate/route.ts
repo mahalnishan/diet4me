@@ -94,6 +94,20 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     const contentText = extractGeminiText(data) ?? "";
 
+    // Track analytics
+    try {
+      await fetch(`${request.nextUrl.origin}/api/analytics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+    } catch (analyticsError) {
+      console.error('Analytics tracking failed:', analyticsError);
+      // Don't fail the main request if analytics fails
+    }
+
     return NextResponse.json({ content: contentText });
   } catch (error) {
     return NextResponse.json(
