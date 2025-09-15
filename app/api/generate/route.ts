@@ -100,9 +100,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     const contentText = extractGeminiText(data) ?? "";
 
-    // Note: Analytics tracking removed temporarily to fix 500 errors
-    // TODO: Implement proper analytics tracking without blocking the main request
-
     return NextResponse.json({ content: contentText });
   } catch (error) {
     return NextResponse.json(
