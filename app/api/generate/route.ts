@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { streamText } from 'ai';
 
 type GenerateBody = {
   age: number;
@@ -11,6 +13,8 @@ type GenerateBody = {
   dietPreference: string;
   fileUploaded: boolean;
   fileName: string | null;
+  goal: string;
+  allergens: string[];
 };
 
 export async function POST(request: NextRequest) {
@@ -31,76 +35,48 @@ export async function POST(request: NextRequest) {
       `- Age: ${body.age}`,
       `- Height: ${body.height} cm`,
       `- Weight: ${body.weight} kg`,
-      `- BMI: ${body.bmi || "N/A"}`,
-      `- BMI Category: ${body.bmiCategory || "N/A"}`,
-      `- Activity Level: ${body.activityLevel}`,
-      `- Health Conditions: ${body.healthConditions.join(", ")}`,
-      `- Diet Preference: ${body.dietPreference}`,
-      `- File Uploaded: ${body.fileUploaded ? `Yes (${body.fileName ?? "unknown"})` : "No"}`,
-      `\nRequirements:`,
-      `- Create a comprehensive 7-day meal plan.`,
-      `- Return ONLY a markdown table with the meal plan.`,
-      `- Tailor meals to activity level.`,
-      `- Respect health conditions and diet preference.`,
-      `- Include hydration guidance for each day.`,
-      `${body.dietPreference === "Blueprint" ? `\nBlueprint Diet Guidelines:` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Focus on plant-based, nutrient-dense foods with comprehensive ingredient variety` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Use vegetables: broccoli, cauliflower, shiitake mushrooms, red cabbage, zucchini, sweet potatoes, spinach, carrots, sugar snap peas, mung bean sprouts` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Include legumes: black lentils, red lentils, chickpeas, cooked lentils` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Use healthy fats: extra virgin olive oil, hemp seeds, walnuts, macadamia nuts, almonds` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Incorporate fruits: blueberries, strawberries, pomegranate arils, dark cherries, lime juice` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Add seeds: chia seeds, ground flax, hemp seeds` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Use spices: turmeric, cumin, ginger, garlic, cinnamon, paprika, black pepper, salt` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Include herbs: fresh mint, cilantro, parsley, rosemary, thyme` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Add condiments: balsamic vinegar, apple cider vinegar, maple syrup, vanilla extract` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Use plant milks: almond milk, macadamia nut milk, coconut milk` : ""}`,
-      `${body.dietPreference === "Blueprint" ? `- Emphasize anti-inflammatory and longevity-promoting ingredients` : ""}`,
-        `${body.dietPreference === "Indian" ? `\nIndian Plan Guidelines:` : ""}`,
-        `${body.dietPreference === "Indian" ? `- Prefer Indian meal patterns (breakfast, lunch, dinner, snack) with regional variety and commonly available dishes.` : ""}`,
-        `${body.dietPreference === "Indian" ? `- Keep dishes balanced and practical (e.g., poha/upma/chilla, dal-roti, rajma/chole, khichdi, idli/dosa, curd/chaas, seasonal fruits).` : ""}`,
-        `${body.dietPreference === "Indian" ? `- Keep spice levels moderate and note whole grains (millets, brown rice), legumes, paneer/tofu, and healthy oils.` : ""}`,
-        `${body.dietPreference === "Indian" ? `- For inspiration, align with reputable Indian recipe collections (e.g., Fitelo recipes) while keeping nutrition-first and portion-aware.` : ""}`,
-      `\nFormat your response as ONLY this table structure:`,
-      `| Meal | Day 1 | Day 2 | Day 3 | Day 4 | Day 5 | Day 6 | Day 7 |`,
-      `|------|-------|-------|-------|-------|-------|-------|-------|`,
-      `| Breakfast | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
-      `| Lunch | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
-      `| Dinner | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
-      `| Snack | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] |`,
-      `| Hydration | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] |`,
-      `\nDo not include any other text, headers, or sections. Just the table.`,
+      [
+        `- BMI: ${body.bmi ?? "N/A"}`,
+        `- BMI Cat: ${body.bmiCategory ?? "N/A"}`,
+        `- Act. Level: ${body.activityLevel ?? "moderate"}`,
+        `- Health Cond.: ${body.healthConditions?.length ? body.healthConditions.join(", ") : "None"}`,
+        `- Diet: ${body.dietPreference ?? "None"}`,
+        `- Goal: ${body.goal ?? "General fitness"}`,
+        `- Allergens: ${body.allergens?.length ? body.allergens.join(", ") : "None"}`,
+        `- File: ${body.fileUploaded ? `Yes (${body.fileName ?? "unknown"})` : "No"}`,
+        `\nRequirements:`,
+        `- Produce a concise 7-day meal plan as ONLY a markdown table (see structure below).`,
+        `- Tailor calories & meals to activity level and goal.`,
+        `- Respect health conditions, allergens, and diet preference.`,
+        `- Each table cell: meal name optionally + 1 short note (max 12 words).`,
+        `- Include daily hydration guidance (volume or simple rule).`,
+        `${body.dietPreference === "Blueprint" ? `\nBlueprint Guidelines: plant-forward, nutrient-dense; use veg (broccoli, spinach, sweet potato, zucchini), legumes (lentils, chickpeas), healthy fats (olive oil, nuts, seeds), berries, spices (turmeric, ginger), plant milks. Emphasize anti-inflammatory choices.` : ""}`,
+        `${body.dietPreference === "Indian" ? `\nIndian Guidelines: prefer Indian meal patterns; include legumes, whole grains (millets, brown rice), paneer/tofu, seasonal fruits; keep spice moderate and portions balanced.` : ""}`,
+        `\nFormat your response as ONLY this table structure:`,
+        `| Meal | Day 1 | Day 2 | Day 3 | Day 4 | Day 5 | Day 6 | Day 7 |`,
+        `|------|-------|-------|-------|-------|-------|-------|-------|`,
+        `| Breakfast | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
+        `| Lunch | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
+        `| Dinner | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] | [meal] |`,
+        `| Snack | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] |`,
+        `| Hydration | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] |`,
+        `\nDo not include any other text, headers, or sections. Just the table.`
+      ]      
     ].join("\n");
 
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
-      encodeURIComponent(apiKey);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-      }),
+    const google = createGoogleGenerativeAI({
+      apiKey,
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      return NextResponse.json(
-        { error: `Gemini API error: ${text}` },
-        { status: 500 }
-      );
-    }
+    const model = google('gemini-2.0-flash');
 
-    const data = await response.json();
-    const contentText = extractGeminiText(data) ?? "";
+    const result = await streamText({
+      model,
+      prompt,
+      maxTokens: 2000,
+    });
 
-    return NextResponse.json({ content: contentText });
+    return result.toTextStreamResponse();
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message ?? "Unknown error" },
@@ -109,26 +85,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function extractGeminiText(data: any): string | null {
-  // Gemini generateContent typical structure:
-  // {
-  //   candidates: [
-  //     { content: { parts: [{ text: "..." }] } }
-  //   ]
-  // }
-  try {
-    const parts = data?.candidates?.[0]?.content?.parts;
-    if (Array.isArray(parts)) {
-      const joined = parts
-        .map((p: any) => (typeof p?.text === "string" ? p.text : ""))
-        .filter(Boolean)
-        .join("\n");
-      return joined || null;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
+
 
 

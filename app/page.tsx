@@ -24,9 +24,11 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [streamingText, setStreamingText] = useState<string>("");
 
   const chatRef = useRef<HTMLDivElement>(null);
   const planRef = useRef<HTMLDivElement>(null!);
+
 
   // Memoized callbacks to prevent unnecessary re-renders
   const addHealthCondition = useCallback(() => {
@@ -61,6 +63,7 @@ export default function Home() {
     setDietPreference("Blueprint");
     setMessages([]);
     setError("");
+    setStreamingText("");
   };
 
   const handleGenerate = async () => {
@@ -72,11 +75,10 @@ export default function Home() {
 
     setError('');
     setIsGenerating(true);
+    setStreamingText('');
 
     // Clear existing diet plan
     setMessages([]);
-
-    const startTime = Date.now();
 
     try {
       const payload = {
@@ -106,11 +108,28 @@ export default function Home() {
         throw new Error('Failed to generate diet plan');
       }
 
-      const data: { content?: string } = await response.json();
-      const content = data.content ?? generateMockPlan();
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+        setStreamingText(fullText);
+      }
+
+      // Add the final result to messages
       setMessages((prev) => [
         ...prev,
-        { role: "ai", content },
+        { role: "ai", content: fullText },
       ]);
       
     } catch (err) {
@@ -122,6 +141,7 @@ export default function Home() {
       
     } finally {
       setIsGenerating(false);
+      setStreamingText('');
     }
   };
 
@@ -358,7 +378,82 @@ export default function Home() {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" ref={chatRef}>
-                  {messages.length === 0 ? (
+                  {isGenerating && streamingText ? (
+                    <div className="space-y-4">
+                      <div className="text-center py-4">
+                        <div className="w-6 h-6 border-2 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-2"></div>
+                        <p className="text-slate-600 text-sm">Generating your diet plan...</p>
+                      </div>
+                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div className="prose prose-sm max-w-none">
+                          {(() => {
+                            const lines = streamingText.split('\n');
+                            const tableLines = lines.filter(line => line.includes('|') && !line.includes('---'));
+                            
+                            if (tableLines.length > 0) {
+                              // Parse the table structure
+                              const headers = tableLines[0].split('|').filter(cell => cell.trim());
+                              const mealRows = tableLines.slice(1); // Skip header row
+                              
+                              return (
+                                <div className="my-4 h-full">
+                                  <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden h-full">
+                                    <div className="overflow-x-auto h-full">
+                                      <table className="w-full h-full">
+                                        <thead>
+                                          <tr className="bg-slate-100 border-b border-slate-200">
+                                            {headers.map((header, index) => (
+                                              <th
+                                                key={index}
+                                                className="px-3 py-4 text-left text-xs font-semibold text-slate-700 w-1/8 h-16"
+                                              >
+                                                {header.trim()}
+                                              </th>
+                                            ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {mealRows.map((row, rowIndex) => {
+                                            const cells = row.split('|').filter(cell => cell.trim());
+                                            if (cells.length === headers.length) {
+                                              return (
+                                                <tr key={rowIndex} className="border-b border-slate-200 last:border-b-0 hover:bg-slate-100">
+                                                  {cells.map((cell, cellIndex) => (
+                                                    <td
+                                                      key={cellIndex}
+                                                      className={`px-3 py-4 text-xs text-slate-800 w-1/8 h-20 ${
+                                                        cellIndex === 0 ? 'font-medium text-slate-700 bg-slate-100' : 'bg-white'
+                                                      }`}
+                                                    >
+                                                      <div className="break-words leading-relaxed h-full flex items-center">
+                                                        {cell.trim()}
+                                                      </div>
+                                                    </td>
+                                                  ))}
+                                                </tr>
+                                              );
+                                            }
+                                            return null;
+                                          })}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            
+                            // Fallback to raw text if not a complete table yet
+                            return (
+                              <pre className="text-xs text-slate-600 whitespace-pre-wrap">
+                                {streamingText}
+                              </pre>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  ) : messages.length === 0 ? (
                     <div className="text-center py-8 sm:py-12">
                       <div className="text-slate-400 mb-2">
                         <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

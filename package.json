@@ -14,12 +14,15 @@
     "perf": "npm run build && npm run start"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.14",
+    "ai": "^5.0.44",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "next": "15.4.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@types/node": "^20",
