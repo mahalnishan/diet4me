@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
     const result = await streamText({
       model,
       prompt,
-      maxTokens: 2000,
     });
 
     return result.toTextStreamResponse();
