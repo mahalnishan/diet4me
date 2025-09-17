@@ -167,36 +167,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* SEO for home */}
-      <head>
-        <title>AI Diet Plan Generator | Personalized Weekly Meal Planner</title>
-        <meta name="description" content="Diet4Me is a free AI diet plan generator that builds a personalized weekly meal plan. Custom meal plan generator and AI meal planner." />
-        <meta name="keywords" content="ai diet plan generator, free diet plan generator, personalized diet plan, custom meal plan generator, ai meal planner, weekly meal plan generator" />
-      </head>
-      
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-2 sm:py-3">
-          <div className="flex items-center justify-start">
-            <div className="flex items-center space-x-1.5 sm:space-x-2">
-              <OptimizedImage
-                src="/logo.png"
-                alt="Diet4Me Logo"
-                width={40}
-                height={40}
-                className="w-5 h-5 sm:w-10 sm:h-10"
-                priority={true}
-                sizes="(max-width: 640px) 20px, 40px"
-              />
-              <div>
-                <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">Diet4Me</h1>
-                <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">AI-Powered Personalized Nutrition</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">

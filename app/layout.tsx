@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import Navigation from "@/components/Navigation";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const siteName = "Diet4Me";
@@ -102,6 +103,7 @@ export default function RootLayout({
       <body className="font-helvetica antialiased">
         <ErrorBoundary>
           <PerformanceMonitor />
+          <Navigation />
           {children}
         </ErrorBoundary>
       </body>
