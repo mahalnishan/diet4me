@@ -45,10 +45,11 @@ export async function POST(request: NextRequest) {
         `- Allergens: ${body.allergens?.length ? body.allergens.join(", ") : "None"}`,
         `- File: ${body.fileUploaded ? `Yes (${body.fileName ?? "unknown"})` : "No"}`,
         `\nRequirements:`,
-        `- Produce a concise 7-day meal plan as ONLY a markdown table (see structure below).`,
-        `- Tailor calories & meals to activity level and goal.`,
-        `- Respect health conditions, allergens, and diet preference.`,
-        `- Each table cell: meal name optionally + 1 short note (max 12 words).`,
+        `- Create a 7-day meal plan as ONLY a markdown table (see format below).`,
+        `- Each full day must total ~2250 kcal (±5%).`,
+        `- Split calories realistically: Breakfast ~25%, Lunch ~30%, Dinner ~30%, Snacks ~15%.`,
+        `- Tailor to activity level, goal, health conditions, allergens, and diet preference.`,
+        `- Each table cell: meal name + short note (max 12 words).`,
         `- Include daily hydration guidance (volume or simple rule).`,
         `${body.dietPreference === "Blueprint" ? `\nBlueprint Guidelines: plant-forward, nutrient-dense; use veg (broccoli, spinach, sweet potato, zucchini), legumes (lentils, chickpeas), healthy fats (olive oil, nuts, seeds), berries, spices (turmeric, ginger), plant milks. Emphasize anti-inflammatory choices.` : ""}`,
         `${body.dietPreference === "Indian" ? `\nIndian Guidelines: prefer Indian meal patterns; include legumes, whole grains (millets, brown rice), paneer/tofu, seasonal fruits; keep spice moderate and portions balanced.` : ""}`,
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
         `| Snack | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] | [snack] |`,
         `| Hydration | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] | [hydration] |`,
         `\nDo not include any other text, headers, or sections. Just the table.`
-      ]      
+      ]         
     ].join("\n");
 
     const google = createGoogleGenerativeAI({
