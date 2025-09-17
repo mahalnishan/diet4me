@@ -72,8 +72,6 @@ export default function PerformanceMonitor() {
 
     // Preload export libraries when user hovers over export buttons
     const preloadExportLibraries = () => {
-      import('html-to-image');
-      import('html2canvas');
       import('jspdf');
     };
 

@@ -27,7 +27,7 @@ export default function Home() {
   const [streamingText, setStreamingText] = useState<string>("");
 
   const chatRef = useRef<HTMLDivElement>(null);
-  const planRef = useRef<HTMLDivElement>(null!);
+  const planRef = useRef<HTMLDivElement>(null);
 
 
   // Memoized callbacks to prevent unnecessary re-renders
@@ -47,6 +47,7 @@ export default function Home() {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
+
 
   // removed fullscreen feature
 
@@ -371,7 +372,6 @@ export default function Home() {
                 <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-3">
                   <div>
                     <h3 className="text-base sm:text-lg font-semibold text-slate-900">Your Diet Plan</h3>
-                    <p className="text-xs sm:text-sm text-slate-600">AI-generated personalized recommendations</p>
                   </div>
                   <ExportButtons planRef={planRef} messagesLength={messages.length} />
                 </div>
