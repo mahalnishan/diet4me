@@ -16,54 +16,59 @@ type WorkoutInputs = {
   timePerSessionMinutes?: number;
 };
 
-const PROMPT_TEMPLATE = `Create a simple, personalized workout plan based on the user's profile. Use basic exercises that anyone can do at home with no equipment, but adjust the intensity and focus based on their specific profile.
+const PROMPT_TEMPLATE = `
+Generate a 7-day, equipment-free workout plan aligned with Bryan Johnson’s Blueprint. Output ONLY a single markdown table sized 8×8 (header row + 7 day columns; left column = 7 row labels). No text outside the table.
 
-User Profile:
-- Age: {{age}}
-- Gender: {{gender}}
-- Height (cm): {{heightCm}}
-- Weight (kg): {{weightKg}}
-- Fitness level: {{fitnessLevel}}
-- Goals: {{goals}}
+Input fields (must use exact keys):
+- age (integer; default 35)
+- gender (male/female/other/unspecified; default unspecified)
+- heightCm (integer; default 175)
+- weightKg (integer; default 75)
+- fitnessLevel (beginner / intermediate / advanced; default intermediate)
+- goals (comma-separated: longevity, strength, fat_loss, endurance, mobility)
+- healthFlags (optional comma-separated: pregnancy, cardiac_issue, recent_injury)
 
-PERSONALIZATION RULES:
-- **Age**: Younger users (under 30) can handle slightly more reps, older users (50+) should focus more on mobility and lighter intensity
-- **Gender**: Consider different body compositions and typical strength levels
-- **Height/Weight**: Adjust rep counts based on body size (taller/heavier = fewer reps, shorter/lighter = more reps)
-- **Fitness Level**: 
-  - Beginner: 3-8 reps, 5-15 min sessions
-  - Intermediate: 8-15 reps, 15-25 min sessions  
-  - Advanced: 15-25 reps, 25-35 min sessions
-- **Goals**: Focus exercises on their specific goals (strength = more push-ups/squats, endurance = more walking, mobility = more stretching)
+Hard rules:
+1) Permitted exercise vocabulary: Push-ups, Squats, Plank, Walk, Stretch, HIIT.
+2) Table structure:
+   - Columns: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+   - Rows: Monday..Sunday as leftmost labels in bold (e.g., | **Monday** | ... )
+   - Each cell = one line, entries comma-separated, format like "10 Push-ups, 15 Squats, 30s Plank, 20 min Walk, 10 min Stretch".
+   - No "Rest" cells. Every day must include activity.
+3) Daily Walk rule:
+   - Every cell must include Walk.
+   - Weekly Walk total ≥150 min unless mobility-first applies.
+4) Scaling algorithm:
+   - base_reps = beginner:5, intermediate:12, advanced:20
+   - size_factor = clamp(1 - ((heightCm-175)/200) - ((weightKg-75)/300), 0.7, 1.2)
+   - goal_modifier: strength=1.15, longevity=0.85, fat_loss=1.0, mobility=0.8, endurance=1.0
+   - age_factor: <30=1.1, 30–50=1.0, 50–74=0.8, ≥75=0.6
+   - reps = round(base_reps * size_factor * goal_modifier * age_factor)
+   - plank_seconds = round({beginner:20, intermediate:30, advanced:45}[fitnessLevel] * age_factor)
+   - walk_minutes/day target by goal: longevity 30–45, strength 20–30, fat_loss 30–45, endurance 30–45, mobility 20–30. Allocate across all days.
+5) HIIT protocol (every day):
+   - Add "HIIT 20s Work / 20s Rest × 8 rounds (4 min)" to every cell.
+   - Beginners may use "20s Work / 40s Rest × 8 rounds (4 min)" if scaling down.
+   - Modality: cycle ergometer, treadmill, track, bodyweight moves, or resistance exercises.
+   - Walk must still be present in each cell.
+6) Health overrides:
+   - If age ≥75 OR healthFlags include pregnancy, cardiac_issue, recent_injury → mobility-first mode:
+     • Only Walk (≤15 min), Plank (≤15s), Stretch  
+     • No HIIT  
+     • Weekly Walk ≤100 min
+7) Output constraints:
+   - Table only, no commentary, no extra rows/columns, no code fences around output.
+   - Units: "s" for seconds (e.g., "30s Plank"), "min" for minutes (e.g., "20 min Walk").
+   - Round all numbers to integers.
+8) Defaults: If input missing, apply defaults and still produce table.
 
-IMPORTANT: Format the weekly plan as a simple markdown table with days as both column headers and row labels. The table should have:
-- Days of the week as column headers (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
-- Days of the week as row labels on the left side
-- Each cell should contain ONLY: Simple exercises with personalized rep counts and durations
-- Use ONLY basic bodyweight exercises: Push-ups, Squats, Planks, Walking, Stretching
-- Keep descriptions very short and simple
-- NO complicated exercises or gym equipment needed
+Return the plan as a valid 8×8 markdown table.
+`;
 
-Example table format:
-| | Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday |
-|---|---|---|---|---|---|---|---|
-| **Monday** | 8 Push-ups, 12 Squats, 25 sec Plank | 20 min Walk | 10 min Stretching | 8 Push-ups, 12 Squats, 25 sec Plank | 20 min Walk | 10 min Stretching | Rest Day |
-| **Tuesday** | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | 8 Push-ups, 12 Squats, 25 sec Plank | 20 min Walk | 10 min Stretching | Rest Day |
-| **Wednesday** | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 8 Push-ups, 12 Squats, 25 sec Plank | 20 min Walk | 10 min Stretching | Rest Day |
-| **Thursday** | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 20 min Walk | 10 min Stretching | Rest Day |
-| **Friday** | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | Rest Day |
-| **Saturday** | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | Rest Day |
-| **Sunday** | Rest Day | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank | 10 min Stretching | 20 min Walk | 8 Push-ups, 12 Squats, 25 sec Plank |
 
-PERSONALIZATION EXAMPLES:
-- **Beginner + Young**: 5-8 reps, 10-15 min sessions
-- **Beginner + Older**: 3-5 reps, 5-10 min sessions, more stretching
-- **Intermediate + Male**: 10-15 reps, 15-25 min sessions
-- **Intermediate + Female**: 8-12 reps, 15-20 min sessions
-- **Advanced + Young**: 15-25 reps, 25-35 min sessions
-- **Goals**: longevity = more walking/stretching, strength = more push-ups/squats, fat_loss = more walking, muscle_gain = more push-ups/squats
 
-Please provide a simple but personalized workout plan that matches their profile.`;
+
+
 
 function clampDays(preferred?: number, fitnessLevel: FitnessLevel = 'intermediate') {
   if (preferred && preferred >= 1 && preferred <= 7) return preferred;
