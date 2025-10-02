@@ -5,7 +5,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "@/components/Navigation";
 import { Analytics } from '@vercel/analytics/next';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://diet4me.life";
 const siteName = "Diet4Me";
 const siteTitle = "Diet4Me – AI-Powered Personalized Weekly Meal Plans";
 const siteDescription =
