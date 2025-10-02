@@ -3,7 +3,8 @@ import "./globals.css";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "@/components/Navigation";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://diet4me.life";
 const siteName = "Diet4Me";
@@ -107,6 +108,7 @@ export default function RootLayout({
           <Navigation />
           {children}
           <Analytics />
+          <SpeedInsights />
         </ErrorBoundary>
       </body>
     </html>
